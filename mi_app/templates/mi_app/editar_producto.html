@@ -1,0 +1,48 @@
+{% extends 'mi_app/base.html' %}
+
+{% block title %}Editar Producto{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mt-4 mb-3">Editar Producto</h2>
+    
+    <form method="post" id="productoForm">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Guardar Cambios
+        </button>
+        <a href="{% url 'lista_productos' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById("productoForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        fetch(window.location.href, {
+            method: "POST",
+            body: new FormData(this),
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire("¡Éxito!", "Producto actualizado correctamente", "success").then(() => {
+                    window.location.href = "{% url 'lista_productos' %}";
+                });
+            } else {
+                Swal.fire("Error", "Hubo un problema al actualizar el producto", "error");
+            }
+        });
+    });
+</script>
+{% endblock %}
